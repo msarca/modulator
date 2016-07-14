@@ -26,6 +26,7 @@ class AppInfo
     const VENDOR_DIR = 'vendor-dir';
     const COMPOSER_FILE = 'composer-file';
     const BOOTSTRAP_FILE = 'bootstrap-file';
+    const CLASSMAP_KEYS = 'classmap_keys';
 
     /** @var  string */
     protected $rootDir;

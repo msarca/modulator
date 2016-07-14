@@ -24,11 +24,14 @@ namespace Opis\Modulator;
 use Composer\Composer;
 use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
+use Composer\Package\CompletePackage;
 use Composer\Plugin\PluginInterface;
 use Composer\Script\Event;
 
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
+    const PACKAGE_TYPE = 'module';
+
     /** @var  IOInterface */
     protected $io;
 
@@ -58,7 +61,57 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
     public function handleDumpAutoload(Event $event)
     {
-        
+        $extra = $this->composer->getPackage()->getExtra();
+        $rootDir = realpath($this->composer->getConfig()->get('vendor-dir') . '/../');
+        $settings = isset($extra['application']) ? $extra['application'] : array();
+
+        $installMode = true;
+        $installed = $enabled = array();
+    }
+
+    protected function preparePackages($installMode, array $enabled, array $installed)
+    {
+        /** @var CompletePackage[] $packages */
+        $packages = $this->composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
+
+        foreach ($packages as $package){
+            if($package->getType() !== static::PACKAGE_TYPE){
+                continue;
+            }
+
+            $module = $package->getName();
+
+            if($installMode){
+                $package->setAutoload(array());
+                continue;
+            }
+
+            if(!in_array($module, $installed)){
+                $package->setAutoload(array());
+                continue;
+            }
+
+            if(in_array($module, $enabled)){
+                continue;
+            }
+
+            $classmap = array();
+            $extra = $package->getExtra();
+
+            foreach (array('collector', 'installer') as $key) {
+                if(!isset($extra[$key]) || !is_array($extra[$key])){
+                    continue;
+                }
+                $item = $extra[$key];
+                if(isset($item['file']) && isset($item['class'])){
+                    $classmap[] = $item['file'];
+                }
+            }
+
+            $package->setAutoload(empty($classmap) ? array() : array('classmap' => $classmap));
+        }
+
+        return $packages;
     }
 
 }

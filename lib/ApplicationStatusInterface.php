@@ -21,19 +21,45 @@
 namespace Opis\Modulator;
 
 
-interface StatusInterface
+use Composer\Package\CompletePackage;
+
+interface ApplicationStatusInterface
 {
     /**
-     * Return a list of enabled modules
+     * ApplicationStatusInterface constructor
      *
-     * @return string[]
+     * @param $rootDir
+     * @param array $settings
      */
-    public function getEnabledModules();
+    public function __construct($rootDir, array $settings);
 
     /**
-     * Return a list of installed modules
+     * Check if the application was installed or not
+     *
+     * @return mixed
+     */
+    public function installMode();
+
+    /**
+     * Get class map for an
+     *
+     * @param array $extra
+     * @return array
+     */
+    public function getClassMap(array $extra);
+
+    /**
+     * Return a list of enabled packages
      *
      * @return string[]
      */
-    public function getInstalledModules();
+    public function getEnabledPackages();
+
+    /**
+     * Return a list of installed packages
+     *
+     * @return string[]
+     */
+    public function getInstalledPackages();
+
 }
