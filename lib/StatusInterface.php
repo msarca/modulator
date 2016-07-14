@@ -3,7 +3,7 @@
  * Opis Project
  * http://opis.io
  * ===========================================================================
- * Copyright 2014-2016 Marius Sarca
+ * Copyright 2016 Marius Sarca
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,44 +21,19 @@
 namespace Opis\Modulator;
 
 
-use Composer\Composer;
-use Composer\EventDispatcher\EventSubscriberInterface;
-use Composer\IO\IOInterface;
-use Composer\Plugin\PluginInterface;
-use Composer\Script\Event;
-
-class Plugin implements PluginInterface, EventSubscriberInterface
+interface StatusInterface
 {
-    /** @var  IOInterface */
-    protected $io;
-
-    /** @var  Composer */
-    protected $composer;
+    /**
+     * Return a list of enabled modules
+     *
+     * @return string[]
+     */
+    public function getEnabledModules();
 
     /**
-     * @param Composer $composer
-     * @param IOInterface $io
-     * @return mixed
+     * Return a list of installed modules
+     *
+     * @return string[]
      */
-    public function activate(Composer $composer, IOInterface $io)
-    {
-        $this->composer = $composer;
-        $this->io = $io;
-    }
-
-    /**
-     * @return array
-     */
-    public static function getSubscribedEvents()
-    {
-        return array(
-            'pre-autoload-dump' => 'handleDumpAutoload'
-        );
-    }
-
-    public function handleDumpAutoload(Event $event)
-    {
-        
-    }
-
+    public function getInstalledModules();
 }
